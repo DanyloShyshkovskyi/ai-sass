@@ -1,6 +1,6 @@
+import { ApiRequestHandler, handleApiRequest } from "@/lib/api-ai-handle";
 import { NextResponse } from "next/server";
-import { ApiRequestHandler, handleApiRequest } from "@/lib/api-handle";
-import { CreateImageRequestSizeEnum, OpenAIApi } from "openai";
+import { CreateImageRequestSizeEnum } from "openai";
 
 interface ImageRequestBody {
   prompt: string;
@@ -8,8 +8,11 @@ interface ImageRequestBody {
   resolution?: CreateImageRequestSizeEnum;
 }
 
-function validateImageRequest({ prompt, amount, resolution }: ImageRequestBody) {
-
+function validateImageRequest({
+  prompt,
+  amount,
+  resolution,
+}: ImageRequestBody) {
   if (!prompt) {
     return new NextResponse("Prompt is required", { status: 400 });
   }
@@ -25,7 +28,10 @@ function validateImageRequest({ prompt, amount, resolution }: ImageRequestBody) 
   return null;
 }
 
-const processImageRequest: ApiRequestHandler<ImageRequestBody> = async ({ body, openai }) => {
+const processImageRequest: ApiRequestHandler<ImageRequestBody> = async ({
+  body,
+  openai,
+}) => {
   const { prompt, amount = 1, resolution = "512x512" } = body;
 
   const response = await openai.createImage({
@@ -38,4 +44,8 @@ const processImageRequest: ApiRequestHandler<ImageRequestBody> = async ({ body, 
 };
 
 export const POST = (req: Request) =>
-  handleApiRequest<ImageRequestBody>(req, processImageRequest, validateImageRequest);
+  handleApiRequest<ImageRequestBody>(
+    req,
+    processImageRequest,
+    validateImageRequest
+  );

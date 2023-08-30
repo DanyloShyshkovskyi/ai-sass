@@ -15,15 +15,32 @@ export type ApiRequestHandler<T> = (
   options: ProcessOptions<T>
 ) => Promise<NextResponse>;
 
-function handleError(message: string, status: number) {
-  return new NextResponse(message, { status });
-}
+const handleError = (message: string, status: number) =>
+  new NextResponse(message, { status });
 
-export async function handleApiRequest<T>(
+const handleErrorResponse = (error: any) => {
+  if (error.response) {
+    const statusCode = error.response.status;
+    const errorMessage = error.response.data?.error?.message || "Unknown error";
+
+    console.error(
+      `[API_ERROR] Status Code: ${statusCode} - Message: ${errorMessage}`
+    );
+    return handleError(errorMessage, statusCode);
+  } else if (error.request) {
+    console.error("[API_ERROR] No response received from the server");
+  } else {
+    console.error("[API_ERROR] Request setup error:", error.message);
+  }
+
+  return handleError("Internal Error", 500);
+};
+
+export const handleApiRequest = async <T>(
   req: Request,
   processRequest: ApiRequestHandler<T>,
   validationFn?: (body: T) => NextResponse | null
-) {
+) => {
   try {
     const { userId } = auth();
     const body = (await req.json()) as T;
@@ -68,21 +85,6 @@ export async function handleApiRequest<T>(
 
     return response;
   } catch (error: any) {
-    if (error.response) {
-      const statusCode = error.response.status;
-      const errorMessage =
-        error.response.data?.error?.message || "Unknown error";
-
-      console.error(
-        `[API_ERROR] Status Code: ${statusCode} - Message: ${errorMessage}`
-      );
-      return handleError(errorMessage, statusCode);
-    } else if (error.request) {
-      console.error("[API_ERROR] No response received from the server");
-    } else {
-      console.error("[API_ERROR] Request setup error:", error.message);
-    }
-
-    return handleError("Internal Error", 500);
+    return handleErrorResponse(error);
   }
-}
+};

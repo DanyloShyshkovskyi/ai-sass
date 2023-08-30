@@ -1,10 +1,9 @@
+import { ApiRequestHandler, handleApiRequest } from "@/lib/api-ai-handle";
+import { NextResponse } from "next/server";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
-  OpenAIApi,
 } from "openai";
-import { NextResponse } from "next/server";
-import { ApiRequestHandler, handleApiRequest } from "@/lib/api-handle";
 
 interface CodeRequestBody {
   messages: ChatCompletionRequestMessage[];

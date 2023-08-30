@@ -1,4 +1,4 @@
-import { ApiRequestHandler, handleApiRequest } from "@/lib/api-handle";
+import { ApiRequestHandler, handleApiRequest } from "@/lib/api-ai-handle";
 import { NextResponse } from "next/server";
 
 interface MusicRequestBody {

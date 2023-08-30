@@ -1,12 +1,11 @@
+import { ApiRequestHandler, handleApiRequest } from "@/lib/api-ai-handle";
 import { NextResponse } from "next/server";
-import { ApiRequestHandler, handleApiRequest } from "@/lib/api-handle";
 
 interface ConversationRequestBody {
   messages: any[]; // Update this with the appropriate type for messages
 }
 
 function validateConversationRequest({ messages }: ConversationRequestBody) {
-
   if (!messages) {
     return new NextResponse("Messages are required", { status: 400 });
   }
@@ -14,7 +13,9 @@ function validateConversationRequest({ messages }: ConversationRequestBody) {
   return null;
 }
 
-const processConversationRequest: ApiRequestHandler<ConversationRequestBody> = async ({ body, openai }) => {
+const processConversationRequest: ApiRequestHandler<
+  ConversationRequestBody
+> = async ({ body, openai }) => {
   const { messages } = body;
 
   const response = await openai.createChatCompletion({
